@@ -1,349 +1,690 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DGP FoodTech | Business Manager</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DGP FoodTech | Business Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-        :root {
-            --red:         #c0392b;
-            --red-dark:    #922b21;
-            --red-soft:    #fdecea;
-            --yellow:      #f1c40f;
-            --yellow-dark: #b7950b;
-            --yellow-soft: #fef9e7;
-            --white:       #ffffff;
-            --bg:          #f5f5f5;
-            --card:        #ffffff;
-            --border:      #e0e0e0;
-            --text:        #1a1a1a;
-            --muted:       #777;
-        }
+:root{
+  --ink:#0a0a0a;
+  --ink2:#141414;
+  --ink3:#1e1e1e;
+  --ink4:#2a2a2a;
+  --line:#2f2f2f;
+  --line2:#3d3d3d;
+  --ghost:#555;
+  --dim:#888;
+  --soft:#bbb;
+  --text:#e8e8e8;
+  --white:#f5f5f5;
+  --accent:#e8e8e8;
+  --green:#1a3d22;
+  --green-t:#3ecf6e;
+  --amber:#3d2e00;
+  --amber-t:#e8a020;
+  --red:#3d1010;
+  --red-t:#e85050;
+}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 14px;
-            min-height: 100vh;
-        }
+html{scroll-behavior:smooth}
 
-        .topbar {
-            background: var(--red);
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .topbar-title { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; }
-        .topbar-sub   { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 0.1em; }
-        .topbar-badge { background: var(--yellow); color: #000; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 100px; letter-spacing: 0.08em; }
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
-        #app { max-width: 880px; margin: 0 auto; padding: 2rem 1.25rem; }
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
 
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        }
-        .card-title {
-            font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
-            color: var(--red); text-transform: uppercase; margin-bottom: 1.25rem;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* ── LOGIN ── */
+#login-section{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;
+  background:var(--ink);
+  transition:opacity .6s ease, transform .6s ease;
+}
+#login-section.hide{
+  opacity:0;transform:translateY(-20px);pointer-events:none;
+}
 
-        .login-wrap { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
-        .login-card { width: 340px; }
-        .login-header { text-align: center; margin-bottom: 1.5rem; }
-        .login-icon {
-            width: 56px; height: 56px; border-radius: 50%;
-            background: var(--red-soft); border: 2px solid var(--red);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 0.75rem;
-        }
-        .login-icon svg { width: 22px; height: 22px; stroke: var(--red); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-        .login-header h2 { font-size: 16px; font-weight: 600; color: var(--text); }
-        .login-header p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.login-box{
+  width:360px;
+  animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both;
+}
 
-        label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
+.login-logo{
+  text-align:center;margin-bottom:2.5rem;
+}
+.login-logo .brand{
+  font-size:11px;letter-spacing:.35em;color:var(--dim);text-transform:uppercase;
+  font-family:'DM Mono',monospace;
+}
+.login-logo .name{
+  font-size:28px;font-weight:300;color:var(--white);margin-top:6px;letter-spacing:-.02em;
+}
+.login-logo .name span{font-weight:600;}
 
-        input, select {
-            width: 100%; padding: 9px 12px; font-size: 13px; font-family: inherit;
-            background: var(--white); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text); outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        input:focus, select:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
-        input[type="password"] { letter-spacing: 0.15em; }
-        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 10px center;
-            padding-right: 30px; appearance: none; -webkit-appearance: none;
-        }
+.login-card{
+  background:var(--ink2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:2rem;
+  position:relative;
+  overflow:hidden;
+}
+.login-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line2),transparent);
+}
 
-        .grid2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
-        .span2 { grid-column: span 2; }
-        .field { display: flex; flex-direction: column; }
+.field-group{margin-bottom:1.25rem;}
+.field-group label{
+  display:block;font-size:11px;font-family:'DM Mono',monospace;
+  letter-spacing:.12em;color:var(--ghost);text-transform:uppercase;margin-bottom:8px;
+}
+.field-group input, .field-group select{
+  width:100%;padding:11px 14px;
+  background:var(--ink3);
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.field-group input:focus,.field-group select:focus{
+  border-color:var(--line2);
+  box-shadow:0 0 0 3px rgba(255,255,255,.04);
+}
+.field-group input[type="password"]{letter-spacing:.2em;font-size:16px;}
 
-        .btn-primary {
-            width: 100%; padding: 11px; font-size: 12px; font-weight: 700;
-            letter-spacing: 0.12em; text-transform: uppercase;
-            background: var(--red); color: #fff; border: none;
-            border-radius: 8px; cursor: pointer;
-            transition: background 0.15s, transform 0.1s; font-family: inherit;
-        }
-        .btn-primary:hover { background: var(--red-dark); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn{
+  width:100%;padding:12px;
+  background:var(--white);color:var(--ink);
+  border:none;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;
+  transition:background .2s, transform .1s, opacity .2s;
+}
+.btn:hover{background:#ddd;}
+.btn:active{transform:scale(.98);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.ghost{
+  background:transparent;color:var(--soft);
+  border:1px solid var(--line);
+}
+.btn.ghost:hover{background:var(--ink3);}
 
-        .err { font-size: 12px; color: var(--red); margin-top: 8px; text-align: center; min-height: 16px; font-weight: 500; }
+.err-msg{
+  font-size:12px;color:var(--red-t);
+  text-align:center;margin-top:10px;
+  min-height:18px;font-family:'DM Mono',monospace;
+}
 
-        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-        .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-        .stat-card .num { font-size: 28px; font-weight: 700; }
-        .stat-card .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; }
-        .stat-activo    .num { color: #27ae60; }
-        .stat-pendiente .num { color: var(--yellow-dark); }
-        .stat-inactivo  .num { color: var(--red); }
+/* ── MAIN APP ── */
+#admin-content{
+  display:none;
+  position:relative;z-index:1;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+}
 
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .count-label { font-size: 12px; color: var(--muted); }
-        .count-label strong { color: var(--text); font-weight: 600; }
-        .filter-select { width: auto; font-size: 12px; padding: 6px 28px 6px 10px; }
+/* ── HEADER ── */
+.header{
+  border-bottom:1px solid var(--line);
+  padding:1.25rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);
+}
+.header-brand .tag{
+  font-size:10px;font-family:'DM Mono',monospace;
+  letter-spacing:.25em;color:var(--ghost);text-transform:uppercase;
+}
+.header-brand .title{
+  font-size:17px;font-weight:500;color:var(--white);letter-spacing:-.01em;margin-top:1px;
+}
+.header-right{
+  display:flex;align-items:center;gap:12px;
+}
+.logout-btn{
+  font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.1em;
+  color:var(--ghost);background:none;border:1px solid var(--line);
+  border-radius:6px;padding:6px 12px;cursor:pointer;
+  text-transform:uppercase;transition:color .2s,border-color .2s;
+}
+.logout-btn:hover{color:var(--soft);border-color:var(--line2);}
 
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th {
-            font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-            color: var(--red); text-transform: uppercase;
-            padding: 9px 12px; border-bottom: 2px solid var(--red);
-            text-align: left; white-space: nowrap; background: var(--red-soft);
-        }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: #fafafa; }
+/* ── LAYOUT ── */
+.app-body{max-width:980px;margin:0 auto;padding:2rem 1.5rem;}
 
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
-        .b-activo    { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
-        .b-pendiente { background: var(--yellow-soft); color: var(--yellow-dark); border: 1px solid #f9e79f; }
-        .b-inactivo  { background: var(--red-soft); color: var(--red-dark); border: 1px solid #f5b7b1; }
+/* ── STATS ── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  margin-bottom:2rem;
+}
+.stat{
+  background:var(--ink2);border:1px solid var(--line);border-radius:12px;
+  padding:1.25rem 1.5rem;
+  position:relative;overflow:hidden;
+  transition:border-color .2s;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+.stat:nth-child(1){animation-delay:.05s}
+.stat:nth-child(2){animation-delay:.1s}
+.stat:nth-child(3){animation-delay:.15s}
+.stat:hover{border-color:var(--line2);}
+.stat-dot{
+  width:6px;height:6px;border-radius:50%;
+  margin-bottom:.75rem;
+}
+.stat-dot.g{background:var(--green-t);}
+.stat-dot.a{background:var(--amber-t);}
+.stat-dot.r{background:var(--red-t);}
+.stat-num{
+  font-size:36px;font-weight:300;color:var(--white);
+  line-height:1;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+}
+.stat-lbl{font-size:11px;color:var(--dim);margin-top:6px;letter-spacing:.05em;}
 
-        .empty { text-align: center; color: var(--muted); padding: 2.5rem; font-size: 13px; }
+/* ── SECTION HEADER ── */
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.25rem;
+}
+.section-title{
+  font-size:11px;font-family:'DM Mono',monospace;
+  letter-spacing:.2em;color:var(--ghost);text-transform:uppercase;
+}
 
-        @media (max-width: 520px) {
-            .grid2 { grid-template-columns: 1fr; }
-            .span2 { grid-column: span 1; }
-            .stats-row { grid-template-columns: 1fr; }
-        }
-    </style>
+/* ── PANEL ── */
+.panel{
+  background:var(--ink2);border:1px solid var(--line);
+  border-radius:16px;margin-bottom:1.5rem;
+  overflow:hidden;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+.panel:nth-child(2){animation-delay:.1s}
+.panel:nth-child(3){animation-delay:.2s}
+.panel-head{
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{
+  font-size:12px;font-family:'DM Mono',monospace;
+  letter-spacing:.15em;color:var(--soft);text-transform:uppercase;
+}
+.panel-body{padding:1.5rem;}
+
+/* ── FORM GRID ── */
+.form-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.span2{grid-column:span 2;}
+.field-group select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;appearance:none;-webkit-appearance:none;
+  cursor:pointer;
+}
+.field-group select option{background:var(--ink3);}
+.field-group input[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(.5);cursor:pointer;
+}
+
+/* ── TABLE ── */
+.table-controls{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--line);
+}
+.count-txt{
+  font-size:12px;font-family:'DM Mono',monospace;color:var(--ghost);
+}
+.count-txt strong{color:var(--soft);font-weight:500;}
+.filter-wrap select{
+  background:var(--ink3);border:1px solid var(--line);
+  border-radius:6px;color:var(--soft);
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;
+  padding:6px 28px 6px 10px;outline:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  appearance:none;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.filter-wrap select:focus{border-color:var(--line2);}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.15em;
+  color:var(--ghost);text-transform:uppercase;
+  padding:10px 16px;text-align:left;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+tbody td{
+  padding:13px 16px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;color:var(--soft);
+  vertical-align:middle;
+  transition:background .15s;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .15s;}
+tbody tr:hover td{background:rgba(255,255,255,.02);}
+
+.td-main{color:var(--white);font-weight:500;}
+.td-mono{font-family:'DM Mono',monospace;font-size:12px;color:var(--dim);}
+
+/* ── INLINE STATUS SELECT ── */
+.status-select{
+  appearance:none;-webkit-appearance:none;
+  border:1px solid transparent;
+  border-radius:20px;
+  padding:4px 24px 4px 10px;
+  font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;
+  letter-spacing:.04em;cursor:pointer;outline:none;
+  background-repeat:no-repeat;background-position:right 7px center;
+  transition:border-color .2s, box-shadow .2s;
+}
+.status-select:focus{box-shadow:0 0 0 2px rgba(255,255,255,.1);}
+.status-select.s-activo{
+  background-color:var(--green);color:var(--green-t);border-color:#1e5530;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233ecf6e' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.status-select.s-pendiente{
+  background-color:var(--amber);color:var(--amber-t);border-color:#5c4500;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23e8a020' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.status-select.s-inactivo{
+  background-color:var(--red);color:var(--red-t);border-color:#5c1a1a;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23e85050' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  background:var(--ink3);border:1px solid var(--line2);
+  border-radius:10px;padding:.85rem 1.25rem;
+  font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.toast-dot.ok{background:var(--green-t);}
+.toast-dot.er{background:var(--red-t);}
+
+/* ── EMPTY ── */
+.empty-row td{
+  text-align:center;padding:3rem;
+  color:var(--ghost);font-size:13px;
+  font-family:'DM Mono',monospace;letter-spacing:.1em;
+}
+
+/* ── SAVING INDICATOR ── */
+.saving-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-family:'DM Mono',monospace;color:var(--dim);
+  opacity:0;transition:opacity .2s;
+}
+.saving-pill.show{opacity:1;}
+.saving-pill::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--amber-t);
+  animation:pulse 1s ease infinite;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes pulse{
+  0%,100%{opacity:1}50%{opacity:.3}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:580px){
+  .form-grid{grid-template-columns:1fr;}
+  .span2{grid-column:span 1;}
+  .stats-grid{grid-template-columns:1fr;}
+  .header{padding:1rem;}
+  .app-body{padding:1rem;}
+}
+</style>
 </head>
 <body>
 
-<div class="topbar">
-    <div>
-        <div class="topbar-title">DGP FoodTech</div>
-        <div class="topbar-sub">Business Manager</div>
+<!-- ═══ LOGIN ═══ -->
+<div id="login-section">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">Sistema de gestión</div>
+      <div class="name">DGP <span>FoodTech</span></div>
     </div>
-    <div class="topbar-badge">Admin Panel</div>
+    <div class="login-card">
+      <div class="field-group">
+        <label>Contraseña de acceso</label>
+        <input type="password" id="master-pass" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter')checkAuth()">
+      </div>
+      <button class="btn" onclick="checkAuth()">Ingresar al sistema</button>
+      <div class="err-msg" id="err-msg"></div>
+    </div>
+  </div>
 </div>
 
-<div id="app">
+<!-- ═══ ADMIN ═══ -->
+<div id="admin-content">
 
-    <!-- LOGIN -->
-    <div id="login-section">
-        <div class="login-wrap">
-            <div class="card login-card">
-                <div class="login-header">
-                    <div class="login-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="11" width="18" height="11" rx="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                    </div>
-                    <h2>Acceso restringido</h2>
-                    <p>Ingresa tu contraseña para continuar</p>
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                    <label>Contraseña</label>
-                    <input type="password" id="master-pass" placeholder="••••••••"
-                        onkeydown="if(event.key==='Enter') checkAuth()">
-                </div>
-                <button class="btn-primary" onclick="checkAuth()">Entrar</button>
-                <div class="err" id="err-msg"></div>
-            </div>
-        </div>
+  <header class="header">
+    <div class="header-brand">
+      <div class="tag">DGP FoodTech</div>
+      <div class="title">Business Manager</div>
+    </div>
+    <div class="header-right">
+      <span class="saving-pill" id="saving-pill">Guardando...</span>
+      <button class="logout-btn" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-dot g"></div>
+        <div class="stat-num" id="stat-a">0</div>
+        <div class="stat-lbl">Negocios activos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-dot a"></div>
+        <div class="stat-num" id="stat-p">0</div>
+        <div class="stat-lbl">Pendientes de pago</div>
+      </div>
+      <div class="stat">
+        <div class="stat-dot r"></div>
+        <div class="stat-num" id="stat-i">0</div>
+        <div class="stat-lbl">Inactivos</div>
+      </div>
     </div>
 
-    <!-- ADMIN -->
-    <div id="admin-content" style="display:none">
-
-        <div class="stats-row">
-            <div class="stat-card stat-activo">
-                <div class="num" id="stat-a">0</div>
-                <div class="lbl">Activos</div>
+    <!-- Formulario -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Registrar nuevo negocio</span>
+      </div>
+      <div class="panel-body">
+        <form id="dgp-form">
+          <div class="form-grid">
+            <div class="field-group"><label>Negocio</label><input type="text" id="negocio" required></div>
+            <div class="field-group"><label>Propietario</label><input type="text" id="propietario" required></div>
+            <div class="field-group"><label>WhatsApp</label><input type="tel" id="telefono" required></div>
+            <div class="field-group"><label>Email</label><input type="email" id="email" required></div>
+            <div class="field-group"><label>Ubicación</label><input type="text" id="ubicacion" required></div>
+            <div class="field-group"><label>Fecha de registro</label><input type="date" id="fecha" required></div>
+            <div class="field-group span2">
+              <label>Estatus inicial</label>
+              <select id="estatus">
+                <option value="Activo">Activo</option>
+                <option value="Pendiente de Pago">Pendiente de pago</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
             </div>
-            <div class="stat-card stat-pendiente">
-                <div class="num" id="stat-p">0</div>
-                <div class="lbl">Pendientes</div>
+            <div class="span2">
+              <button class="btn" type="submit" id="btn-enviar">Guardar en sistema</button>
             </div>
-            <div class="stat-card stat-inactivo">
-                <div class="num" id="stat-i">0</div>
-                <div class="lbl">Inactivos</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Registrar nuevo negocio</div>
-            <form id="dgp-form">
-                <div class="grid2">
-                    <div class="field"><label>Negocio</label><input type="text" id="negocio" required></div>
-                    <div class="field"><label>Propietario</label><input type="text" id="propietario" required></div>
-                    <div class="field"><label>WhatsApp</label><input type="tel" id="telefono" required></div>
-                    <div class="field"><label>Email</label><input type="email" id="email" required></div>
-                    <div class="field"><label>Ubicación</label><input type="text" id="ubicacion" required></div>
-                    <div class="field"><label>Fecha de registro</label><input type="date" id="fecha" required></div>
-                    <div class="field span2">
-                        <label>Estatus inicial</label>
-                        <select id="estatus">
-                            <option value="Activo">Activo</option>
-                            <option value="Pendiente de Pago">Pendiente de pago</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
-                    </div>
-                    <div class="span2">
-                        <button class="btn-primary" type="submit" id="btn-enviar">Guardar en sistema</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Lista de negocios DGP</div>
-            <div class="controls">
-                <span class="count-label">Mostrando: <strong id="count">0</strong> registros</span>
-                <select class="filter-select" id="filter-status" onchange="renderTable()">
-                    <option value="Todos">Ver todos</option>
-                    <option value="Activo">Solo activos</option>
-                    <option value="Pendiente de Pago">Pendientes de pago</option>
-                    <option value="Inactivo">Inactivos</option>
-                </select>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Negocio</th>
-                            <th>Propietario</th>
-                            <th>WhatsApp</th>
-                            <th>Estatus</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-        </div>
-
+          </div>
+        </form>
+      </div>
     </div>
+
+    <!-- Tabla -->
+    <div class="panel">
+      <div class="table-controls">
+        <span class="count-txt">Total: <strong id="count">0</strong> registros</span>
+        <div class="filter-wrap">
+          <select id="filter-status" onchange="renderTable()">
+            <option value="Todos">Todos</option>
+            <option value="Activo">Activos</option>
+            <option value="Pendiente de Pago">Pendientes</option>
+            <option value="Inactivo">Inactivos</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Negocio</th>
+              <th>Propietario</th>
+              <th>WhatsApp</th>
+              <th>Estatus</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot ok" id="toast-dot"></div>
+  <span id="toast-msg">Guardado con éxito</span>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnhsuvOEe9ZunQ4m9-uvSKIOs0R4nNC-MU5D3BR6OuftnfElk53yC49-PtmeLeUIo4/exec";
-    let allData = [];
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnhsuvOEe9ZunQ4m9-uvSKIOs0R4nNC-MU5D3BR6OuftnfElk53yC49-PtmeLeUIo4/exec";
+let allData = [];
 
-    function checkAuth() {
-        const val = document.getElementById('master-pass').value;
-        const err = document.getElementById('err-msg');
-        if (val === "Quasar123") {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('admin-content').style.display = 'block';
-            document.getElementById('fecha').valueAsDate = new Date();
-            loadData();
-        } else {
-            err.textContent = "Contraseña incorrecta. Intenta de nuevo.";
-            document.getElementById('master-pass').value = '';
-            document.getElementById('master-pass').focus();
-        }
-    }
+/* ── SESSION ── */
+function checkAuth() {
+  const val = document.getElementById('master-pass').value;
+  if (val === "Quasar123") {
+    sessionStorage.setItem('dgp_auth','1');
+    showAdmin();
+  } else {
+    document.getElementById('err-msg').textContent = "Contraseña incorrecta.";
+    document.getElementById('master-pass').value = '';
+    document.getElementById('master-pass').focus();
+  }
+}
 
-    async function loadData() {
-        try {
-            const r = await fetch(WEB_APP_URL);
-            allData = await r.json();
-        } catch (e) {
-            allData = [];
-        }
-        updateStats();
-        renderTable();
-    }
+function logout() {
+  sessionStorage.removeItem('dgp_auth');
+  document.getElementById('login-section').classList.remove('hide');
+  document.getElementById('admin-content').style.display = 'none';
+  document.getElementById('master-pass').value = '';
+}
 
-    function updateStats() {
-        document.getElementById('stat-a').innerText = allData.filter(i => i.estatus === 'Activo').length;
-        document.getElementById('stat-p').innerText = allData.filter(i => i.estatus && i.estatus.includes('Pendiente')).length;
-        document.getElementById('stat-i').innerText = allData.filter(i => i.estatus === 'Inactivo').length;
-    }
+function showAdmin() {
+  document.getElementById('login-section').classList.add('hide');
+  setTimeout(() => {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    document.getElementById('fecha').valueAsDate = new Date();
+    loadData();
+  }, 500);
+}
 
-    function renderTable() {
-        const filter = document.getElementById('filter-status').value;
-        const tbody  = document.getElementById('table-body');
-        tbody.innerHTML = "";
+/* On load: check session */
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('dgp_auth') === '1') {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    document.getElementById('fecha').valueAsDate = new Date();
+    loadData();
+  }
+});
 
-        const filtered = allData.filter(i => filter === "Todos" || i.estatus === filter);
-        document.getElementById('count').innerText = filtered.length;
+/* ── DATA ── */
+async function loadData() {
+  try {
+    const r = await fetch(WEB_APP_URL);
+    allData = await r.json();
+  } catch(e) { allData = []; }
+  updateStats();
+  renderTable();
+}
 
-        if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="4" class="empty">Sin registros para mostrar</td></tr>`;
-            return;
-        }
+function updateStats() {
+  animCount('stat-a', allData.filter(i => i.estatus === 'Activo').length);
+  animCount('stat-p', allData.filter(i => i.estatus && i.estatus.includes('Pendiente')).length);
+  animCount('stat-i', allData.filter(i => i.estatus === 'Inactivo').length);
+}
 
-        filtered.forEach(item => {
-            const cls = item.estatus === 'Activo' ? 'b-activo'
-                      : item.estatus && item.estatus.includes('Pendiente') ? 'b-pendiente'
-                      : 'b-inactivo';
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.negocio}</td>
-                    <td>${item.propietario}</td>
-                    <td>${item.telefono}</td>
-                    <td><span class="badge ${cls}">${item.estatus}</span></td>
-                </tr>`;
-        });
-    }
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  let n = 0;
+  const step = Math.max(1, Math.ceil(target / 20));
+  const iv = setInterval(() => {
+    n = Math.min(n + step, target);
+    el.textContent = n;
+    if (n >= target) clearInterval(iv);
+  }, 40);
+}
 
-    document.getElementById('dgp-form').onsubmit = function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btn-enviar');
-        btn.textContent = "Guardando...";
-        btn.disabled = true;
+function renderTable() {
+  const filter = document.getElementById('filter-status').value;
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
 
-        const data = {
-            negocio:     document.getElementById('negocio').value,
-            propietario: document.getElementById('propietario').value,
-            telefono:    document.getElementById('telefono').value,
-            email:       document.getElementById('email').value,
-            ubicacion:   document.getElementById('ubicacion').value,
-            fecha:       document.getElementById('fecha').value,
-            estatus:     document.getElementById('estatus').value
-        };
+  const filtered = allData.filter(i => filter === 'Todos' || i.estatus === filter);
+  document.getElementById('count').textContent = filtered.length;
 
-        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
-            .then(() => {
-                alert("Negocio guardado con éxito.");
-                location.reload();
-            })
-            .catch(() => {
-                btn.textContent = "Guardar en sistema";
-                btn.disabled = false;
-                alert("Error al guardar. Revisa la conexión.");
-            });
-    };
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">— Sin registros —</td></tr>`;
+    return;
+  }
+
+  filtered.forEach((item, idx) => {
+    const cls = statusClass(item.estatus);
+    const tr = document.createElement('tr');
+    tr.style.animation = `fadeUp .35s cubic-bezier(.16,1,.3,1) ${idx * 0.04}s both`;
+    tr.innerHTML = `
+      <td class="td-main">${esc(item.negocio)}</td>
+      <td>${esc(item.propietario)}</td>
+      <td class="td-mono">${esc(item.telefono)}</td>
+      <td>
+        <select class="status-select ${cls}"
+          data-negocio="${esc(item.negocio)}"
+          onchange="updateStatus(this, '${esc(item.negocio)}')">
+          <option value="Activo" ${item.estatus==='Activo'?'selected':''}>Activo</option>
+          <option value="Pendiente de Pago" ${item.estatus==='Pendiente de Pago'?'selected':''}>Pendiente de pago</option>
+          <option value="Inactivo" ${item.estatus==='Inactivo'?'selected':''}>Inactivo</option>
+        </select>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function statusClass(s) {
+  if (!s) return 's-inactivo';
+  if (s === 'Activo') return 's-activo';
+  if (s.includes('Pendiente')) return 's-pendiente';
+  return 's-inactivo';
+}
+
+function esc(v) {
+  if (!v) return '';
+  return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── INLINE STATUS UPDATE ── */
+async function updateStatus(sel, negocio) {
+  const newStatus = sel.value;
+
+  /* update class instantly */
+  sel.className = 'status-select ' + statusClass(newStatus);
+
+  /* update local data */
+  const item = allData.find(i => i.negocio === negocio);
+  if (item) item.estatus = newStatus;
+  updateStats();
+
+  showSaving(true);
+
+  const data = { action: 'updateStatus', negocio, estatus: newStatus };
+  try {
+    await fetch(WEB_APP_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(data) });
+    showToast('Estatus actualizado', true);
+  } catch(e) {
+    showToast('Error al actualizar', false);
+  }
+  showSaving(false);
+}
+
+/* ── FORM SUBMIT ── */
+document.getElementById('dgp-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-enviar');
+  btn.textContent = 'Guardando...';
+  btn.disabled = true;
+  showSaving(true);
+
+  const data = {
+    negocio:     document.getElementById('negocio').value,
+    propietario: document.getElementById('propietario').value,
+    telefono:    document.getElementById('telefono').value,
+    email:       document.getElementById('email').value,
+    ubicacion:   document.getElementById('ubicacion').value,
+    fecha:       document.getElementById('fecha').value,
+    estatus:     document.getElementById('estatus').value
+  };
+
+  try {
+    await fetch(WEB_APP_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(data) });
+    showToast('Negocio guardado con éxito', true);
+    this.reset();
+    document.getElementById('fecha').valueAsDate = new Date();
+    await loadData();
+  } catch(e) {
+    showToast('Error al guardar', false);
+  }
+  btn.textContent = 'Guardar en sistema';
+  btn.disabled = false;
+  showSaving(false);
+};
+
+/* ── UI HELPERS ── */
+function showSaving(v) {
+  document.getElementById('saving-pill').classList.toggle('show', v);
+}
+
+let toastTimer;
+function showToast(msg, ok) {
+  const t = document.getElementById('toast');
+  const d = document.getElementById('toast-dot');
+  const m = document.getElementById('toast-msg');
+  m.textContent = msg;
+  d.className = 'toast-dot ' + (ok ? 'ok' : 'er');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
-
 </body>
 </html>

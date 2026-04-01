@@ -549,7 +549,7 @@ function openReminder(negocio, tel, propietario, diaPago) {
   const mes = today.toLocaleString('es-MX', { month: 'long' });
   const msg = `Hola ${propietario} 👋\n\nTe recordamos que el pago de tu suscripción con *DGP FoodTech* correspondiente al mes de *${mes}* está pendiente.\n\n📅 Fecha límite de pago: día *${diaPago}* de cada mes.\n\nPor favor, realiza tu pago a la brevedad para mantener tu servicio activo. ¡Gracias por confiar en nosotros!`;
   document.getElementById('modal-msg').textContent = msg;
-  const waUrl = tel ? `https://wa.me/52${tel}?text=${encodeURIComponent(msg)}` : '#';
+  const waUrl = tel ? `https://wa.me/${tel}?text=${encodeURIComponent(msg)}` : '#';
   document.getElementById('modal-wa-link').href = waUrl;
   if (!tel) document.getElementById('modal-wa-link').style.opacity = '.4';
   document.getElementById('modal-overlay').classList.add('show');

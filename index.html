@@ -400,10 +400,12 @@ async function loadData() {
 }
 
 function isVencido(item) {
-  if (!item.dia_pago || item.estatus === 'Inactivo') return false;
+  // Solo aplica a negocios con estatus "Pendiente de Pago"
+  if (!item.dia_pago || item.estatus !== 'Pendiente de Pago') return false;
   const today = new Date().getDate();
   const dia = parseInt(item.dia_pago);
-  return !isNaN(dia) && today > dia;
+  // Vencido a partir del día de pago (inclusive) si sigue pendiente
+  return !isNaN(dia) && today >= dia;
 }
 
 function updateStats() {

@@ -468,7 +468,7 @@ function renderTable() {
     if (venc) tr.classList.add('row-alert');
 
     const tel = String(item.telefono || '').replace(/\D/g,'');
-    const waLink = tel ? `https://wa.me/52${tel}` : '#';
+    const waLink = tel ? `https://wa.me/${tel}` : '#';
     const diaPago = item.dia_pago || '—';
 
     tr.innerHTML = `
